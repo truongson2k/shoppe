@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopee Link Processor</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+        }
+
+        h2 {
+            color: #007BFF;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 10px;
+        }
+
+        textarea,
+        input {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            resize: vertical;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .output-container,
+        .output {
+            background-color: #e9ecef;
+            color: #495057;
+            border: 1px solid #ced4da;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .outputValidator {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+    </style>
+    <script>
+        function extractUrls() {
+            const inputText = document.getElementById('urlInput').value;
+            const regex = /https:\/\/s\.shopee\.vn\/\S+/g;
+            const matches = inputText.match(regex) || [];
+            document.getElementById('urlOutput').value = matches.join('\n');
+        }
+
+        function copyExtractedUrls() {
+            const outputText = document.getElementById('urlOutput').value;
+            if (outputText) {
+                navigator.clipboard.writeText(outputText)
+                    .then(() => alert('Extracted URLs copied to clipboard!'))
+                    .catch(err => alert('Failed to copy.'));
+            } else {
+                alert('Nothing to copy.');
+            }
+        }
+
+        function addCommaAndDisplay() {
+            const input = document.getElementById('inputText').value;
+            const lines = input.split('\n');
+            for (let i = 0; i < lines.length; i++) {
+                if (i < lines.length - 1 && lines[i] && !lines[i].endsWith(',')) {
+                    lines[i] += ',';
+                }
+            }
+            document.getElementById('outputText').value = lines.join('\n');
+        }
+
+        function copyCommaOutput() {
+            const outputText = document.getElementById('outputText').value;
+            if (outputText) {
+                navigator.clipboard.writeText(outputText)
+                    .then(() => alert('Comma-separated links copied to clipboard!'))
+                    .catch(err => alert('Failed to copy.'));
+            } else {
+                alert('Nothing to copy.');
+            }
+        }
+
+        function validateAndPadUrls() {
+            const inputText = document.getElementById("inputTextValidator").value;
+            const regex = /https:\/\/s\.shopee\.vn\/\S*/g;
+
+            // Process the text to pad URLs as needed
+            const processedText = inputText.replace(regex, match => {
+                const baseUrl = "https://s.shopee.vn/";
+                const id = match.slice(baseUrl.length);
+                return id.length < 10
+                    ? `${baseUrl}${id.padEnd(10, 'X')}` // Pad with 'X' to ensure 10 characters
+                    : match;
+            });
+
+            // Display the processed URLs
+            document.getElementById("outputValidator").textContent = processedText;
+        }
+
+        function copyProcessedUrls() {
+            const outputText = document.getElementById("outputValidator").value;
+            if (outputText) {
+                navigator.clipboard.writeText(outputText)
+                    .then(() => alert('Processed URLs copied to clipboard!'))
+                    .catch(err => alert('Failed to copy.'));
+            } else {
+                alert('Nothing to copy.');
+            }
+        }
+
+    // Existing function for replacing links
+    function replaceLinks() {
+        const text = document.getElementById('inputText2').value;
+        const replacements = document.getElementById('replacementLinks').value.split(',');
+        let index = 0;
+        const regex = /https:\/\/s\.shopee\.vn\/[A-Za-z0-9]{10}/g;
+        const replacedText = text.replace(regex, () => {
+            return replacements[index++]?.trim() || 'https://newlink.com/placeholder';
+        });
+        document.getElementById('outputText2').value = replacedText;
+    }
+
+    // Corrected copyReplace function
+    function copyReplace() {
+        const outputText = document.getElementById("outputText2").value; // Use .value instead of .textContent
+        if (outputText) {
+            navigator.clipboard.writeText(outputText)
+                .then(() => alert('Processed URLs copied to clipboard!'))
+                .catch(err => alert('Failed to copy.'));
+        } else {
+            alert('Nothing to copy.');
+        }
+    }
+
+    </script>
+</head>
+
+<body>
+    <!-- Extract URLs Section -->
+    <div class="container">
+        <h2>Extract URLs</h2>
+        <textarea id="urlInput" rows="6" placeholder="Paste your text here..."></textarea>
+        <button onclick="extractUrls()">Extract URLs</button>
+        <button onclick="copyExtractedUrls()">Copy Extracted URLs</button>
+        <label for="urlOutput">Extracted URLs:</label>
+        <textarea id="urlOutput" class="output" rows="6" readonly></textarea>
+    </div>
+
+    <!-- Add Commas Section -->
+    <div class="container">
+        <h2>Add Commas to Shopee Links</h2>
+        <textarea id="inputText" rows="6" oninput="addCommaAndDisplay()"></textarea>
+        <button onclick="copyCommaOutput()">Copy Comma Output</button>
+        <label for="outputText">Output Text:</label>
+        <textarea id="outputText" class="output" rows="6" readonly></textarea>
+    </div>
+
+    <!-- URL Validator & Padder -->
+    <div class="container">
+        <h2>Shopee URL Validator & Padder</h2>
+        <textarea id="inputTextValidator" placeholder="Paste your text here..."></textarea>
+        <button onclick="validateAndPadUrls()">Process URLs</button>
+        <button onclick="copyProcessedUrls()">Copy Results</button>
+        <div class="outputValidator" id="outputValidator">Processed URLs will appear here...</div>
+    </div>
+
+    <div class="container">
+        <h2>Replace Shopee Links</h2>
+        <label for="inputText2">Input Text:</label>
+        <textarea id="inputText2" rows="6" placeholder="Paste your text here..."></textarea> 
+        <label for="replacementLinks">Replacement Links (comma-separated):</label> 
+        <textarea id="replacementLinks" rows="3" placeholder="Enter replacement links separated by commas..."></textarea> 
+        <button onclick="replaceLinks()">Replace Links</button> 
+        <button onclick="copyReplace()">Copy Results</button>
+        <label for="outputText2">Output Text:</label>
+        <textarea id="outputText2" class="output" rows="6" readonly></textarea>
+    </div>
+</body>
+
+</html>
