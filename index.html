@@ -117,32 +117,31 @@
         }
 
         function validateAndPadUrls() {
-            const inputText = document.getElementById("inputTextValidator").value;
-            const regex = /https:\/\/s\.shopee\.vn\/\S*/g;
+    const inputText = document.getElementById("inputTextValidator").value;
+    const regex = /https:\/\/s\.shopee\.vn\/\S*/g;
 
-            // Process the text to pad URLs as needed
-            const processedText = inputText.replace(regex, match => {
-                const baseUrl = "https://s.shopee.vn/";
-                const id = match.slice(baseUrl.length);
-                return id.length < 10
-                    ? `${baseUrl}${id.padEnd(10, 'X')}` // Pad with 'X' to ensure 10 characters
-                    : match;
-            });
+    const processedText = inputText.replace(regex, match => {
+        const baseUrl = "https://s.shopee.vn/";
+        const id = match.slice(baseUrl.length);
+        return id.length < 10
+            ? `${baseUrl}${id.padEnd(10, 'X')}`
+            : match;
+    });
 
-            // Display the processed URLs
-            document.getElementById("outputValidator").textContent = processedText;
-        }
+    document.getElementById("outputValidator").textContent = processedText; // Use textContent for output display
+}
 
-        function copyProcessedUrls() {
-            const outputText = document.getElementById("outputValidator").value;
-            if (outputText) {
-                navigator.clipboard.writeText(outputText)
-                    .then(() => alert('Processed URLs copied to clipboard!'))
-                    .catch(err => alert('Failed to copy.'));
-            } else {
-                alert('Nothing to copy.');
-            }
-        }
+function copyProcessedUrls() {
+    const outputText = document.getElementById("outputValidator").textContent; // Retrieve processed text
+    if (outputText) {
+        navigator.clipboard.writeText(outputText)
+            .then(() => alert('Processed URLs copied to clipboard!'))
+            .catch(err => alert('Failed to copy.'));
+    } else {
+        alert('Nothing to copy.');
+    }
+}
+
 
     // Existing function for replacing links
     function replaceLinks() {
